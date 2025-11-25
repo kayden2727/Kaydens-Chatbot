@@ -9,7 +9,7 @@ from transformers import pipeline
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, origins=["https://chatbot-4a6d5.web.app"])
+CORS(app, origins=["http://127.0.0.1:5500", "http://localhost:5500"])
 
 
 # Load the dataset
@@ -25,9 +25,8 @@ context = f"""
 Kayden's name is {kayden_data['name']}.
 Kayden is {kayden_data['age']} years old.
 Kayden is a {kayden_data['gender']}.
-Kayden's race is {kayden_data['race']}.
 Kayden's major is {kayden_data['major']}.
-Kayden is a {kayden_data['year']}.set
+Kayden is a {kayden_data['year']}.
 Kayden's hobbies are {hobbies_str}.
 Kayden doesn't have a favorite food.
 Kayden's job is {kayden_data['job']}.
@@ -38,6 +37,8 @@ Kayden's phonenumber is {kayden_data['phonenumber']}.
 Kayden's socials are found at {kayden_data['socials']}.
 Kayden's projects are found at {kayden_data['projects']}.
 Kayden's resume is {kayden_data['resume']}.
+The chatbot is an AI assistant that answers questions about Kayden Roberts.
+The chatbot helps users learn more about Kayden's background, skills, and interests.
 """
 
 # Create the question answering pipeline
@@ -50,6 +51,10 @@ def ask():
 
     if not question:
         return jsonify({'error': 'No question provided'}), 400
+
+    # Handle greetings manually
+    if question.lower().strip() in ['hello', 'hi', 'hey', 'greetings', 'what is up']:
+        return jsonify({'answer': "Hello! I am a chatbot designed to answer questions about Kayden. Ask me anything!", 'score': 1.0})
 
     # Get the answer from the pipeline
     response = qa_pipeline(question=question, context=context)
